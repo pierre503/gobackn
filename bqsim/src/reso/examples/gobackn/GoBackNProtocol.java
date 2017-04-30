@@ -1,6 +1,7 @@
 package reso.examples.gobackn;
 
 
+import static reso.examples.gobackn.SenderProtocol.IP_PROTO_SenderProtocol;
 import reso.ip.Datagram;
 import reso.ip.IPAddress;
 import reso.ip.IPHost;
@@ -21,8 +22,12 @@ implements IPInterfaceListener {
 	
 	@Override
 	public void receive(IPInterfaceAdapter src, Datagram datagram) throws Exception {
-		Payload msg = (Payload) datagram.getPayload();
-		String sequenceSN = msg.getpayload().substring(0, 32);
+            
+		PayloadMessage msg = (PayloadMessage) datagram.getPayload();
+                
+                System.out.println("payload recu:" + msg.getPayload());
+		String sequenceSN = msg.getPayload().substring(0, 32);
+
 		int sequenceNumber = Integer.parseInt(sequenceSN,2);
 		int ack = 0;
 		if(sequenceChecker(sequenceNumber)){
@@ -33,7 +38,10 @@ implements IPInterfaceListener {
 				ack = actualSequenceNumber-1;
 			}
 		}
-		host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_GoBackN, new Payload(ack));
+                AckMessage ackMessage = new AckMessage(ack);
+		host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SenderProtocol, ackMessage);
+                
+                System.out.println("reponse");
 	}
 
 

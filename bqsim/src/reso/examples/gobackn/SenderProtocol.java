@@ -25,8 +25,8 @@ public class SenderProtocol
     private final IPHost host;
     private int actualSequenceNumber = 0;
     private static ArrayList<PayloadMessage> packageToSend = new ArrayList<PayloadMessage>();
-    private int cursorSenderWindow = 0;
-    private int sizeOfWindow = 5;
+    private int cursorSenderWindow = 1;
+    private int sizeOfWindow = 5;//taille de la fenetre d'envoi
 
     public SenderProtocol(IPHost host, int numberOfPackage) {
         this.host = host;
@@ -44,19 +44,21 @@ public class SenderProtocol
          */
         if (sequenceN >= this.actualSequenceNumber) {
             if (sequenceN > this.actualSequenceNumber) {
-                cursorSenderWindow -= this.actualSequenceNumber - sequenceN ;
+                cursorSenderWindow -= sequenceN - this.actualSequenceNumber ;
                 this.actualSequenceNumber = sequenceN + 1;
             }else{
                 this.actualSequenceNumber += 1;
                 cursorSenderWindow -= 1;
-            }
+            }/*
+            Cette partie envoi le nombre d'elements contenu dans la fenetre actuel et qui n'ont pas encore ete envoye
+            */
             int numberOfPackageToSend = sizeOfWindow-cursorSenderWindow;
             for(int i = 0;i < numberOfPackageToSend;i++){
                 if(i+actualSequenceNumber < this.packageToSend.size()){
                     System.out.println("Sender of Message (" + (int) (host.getNetwork().getScheduler().getCurrentTime()*1000) + "ms)" +
 				" host=" + host.name + ", dgram.src=" + datagram.src + ", dgram.dst=" +
-				datagram.dst + ", iif=" + src + ", counter=" + (i+actualSequenceNumber));
-                    host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_GoBackN, this.packageToSend.get(i+actualSequenceNumber));
+				datagram.dst + ", iif=" + src + ", counter=" + (cursorSenderWindow+actualSequenceNumber));
+                    host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_GoBackN, this.packageToSend.get(cursorSenderWindow+actualSequenceNumber));
                 }
                 cursorSenderWindow += 1;
             }

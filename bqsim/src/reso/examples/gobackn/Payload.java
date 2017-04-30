@@ -38,6 +38,6 @@ public class Payload
 	}
 
 	public int getByteLength(){
-		return payload.getByte().length;
+		return payload.getBytes().length;
 	}
 }

@@ -1,12 +1,12 @@
 package reso.examples.gobackn;
 
-/*
+
 import reso.ip.Datagram;
 import reso.ip.IPAddress;
 import reso.ip.IPHost;
 import reso.ip.IPInterfaceAdapter;
 import reso.ip.IPInterfaceListener;
-*/
+
 
 public class GoBackNProtocol 
 implements IPInterfaceListener {
@@ -15,7 +15,7 @@ implements IPInterfaceListener {
 	private final IPHost host; 
 	private int actualSequenceNumber = 0;
 	
-	public PingPongProtocol(IPHost host) {
+	public GoBackNProtocol(IPHost host) {
 		this.host= host;
 	}
 	

@@ -22,7 +22,8 @@ public class GoBackNProtocol
     @Override
     public void receive(IPInterfaceAdapter src, Datagram datagram) throws Exception {
         /*
-         Cette partie verifie que le numero de sequence est celui attendu si c'est celui attendu renvoi le ack sinon renvoi le ack du dernier numero recu.           
+         Cette partie verifie que le numero de sequence est celui attendu si c'est celui attendu renvoi le 
+         ack sinon renvoi le ack du dernier numero recu.           
          */
         PayloadMessage msg = (PayloadMessage) datagram.getPayload();
 

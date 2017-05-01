@@ -7,10 +7,6 @@ package reso.examples.gobackn;
 
 import reso.common.Message;
 
-/**
- *Cette classe represente un ACK.
- * @author pierre
- */
 public class AckMessage implements Message{
     private int Payload;
     

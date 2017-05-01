@@ -9,8 +9,7 @@ import java.util.Random;
 import reso.common.Message;
 
 /**
- *
- * @author pierre
+ * Cette classe s'occupe de créer le message qui formera le paquet a envoye
  */
 public class PayloadMessage implements Message {
 
@@ -28,7 +27,7 @@ public class PayloadMessage implements Message {
         //traduis le numero de sequence en binaire.
         String sequenceNumS = Integer.toBinaryString(sequenceNumber);
 
-        //regarder si on peut ameliorer la 
+        //place le numero de sequence sur 32 "bits"
         int zeroNeed = (32 - sequenceNumS.length());
         for (int i = 0; i < zeroNeed; i++) {
             sequenceNumS = "0" + sequenceNumS;

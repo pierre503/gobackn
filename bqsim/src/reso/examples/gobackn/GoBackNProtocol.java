@@ -42,8 +42,6 @@ public class GoBackNProtocol
                 + " host=" + host.name + ", dgram.src=" + datagram.src + ", dgram.dst="
                 + datagram.dst + ", iif=" + src + ", counter=" + ack);
         host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SenderProtocol, ackMessage);
-
-        System.out.println(" ");
     }
 
     /**

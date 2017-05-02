@@ -23,7 +23,7 @@ public class PayloadMessage implements Message {
     public PayloadMessage(int sequenceNumber) {
         //cree un message aleatoire.
         Random r = new Random();
-        int message = r.nextInt(101);
+        int message = r.nextInt(1001);
         //traduis le numero de sequence en binaire.
         String sequenceNumS = Integer.toBinaryString(sequenceNumber);
 

@@ -53,7 +53,7 @@ public class LauncherGoBackN {
             if (ENABLE_SNIFFER) {
                 host1.addApplication(new AppSniffer(host1, new String[]{"eth0"}));
             }
-            host1.addApplication(new Sender(host1, IP_ADDR2, 200));
+            host1.addApplication(new Sender(host1, IP_ADDR2, 300));
 
             IPHost host2 = NetworkBuilder.createHost(network, "H2", IP_ADDR2, MAC_ADDR2);
             host2.getIPLayer().addRoute(IP_ADDR1, "eth0");

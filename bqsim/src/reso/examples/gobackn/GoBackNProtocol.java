@@ -28,8 +28,8 @@ public class GoBackNProtocol
         PayloadMessage msg = (PayloadMessage) datagram.getPayload();
 
         String sequenceSN = msg.getPayload().substring(0, 32);
-
         int sequenceNumber = Integer.parseInt(sequenceSN, 2);
+        
         int ack = 0;
         if (sequenceChecker(sequenceNumber)) {
             ack = actualSequenceNumber;

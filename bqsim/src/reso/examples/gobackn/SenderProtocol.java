@@ -24,7 +24,7 @@ public class SenderProtocol
     private final IPHost host;
     private int actualSequenceNumber = 0;//numero de sequence attendu.
     private static ArrayList<PayloadMessage> packageToSend = new ArrayList<PayloadMessage>();//liste des package a envoyer.
-    private int cursorSenderWindow = 0;//position du curseur dans la fenetre.
+    private int cursorSenderWindow = 1;//position du curseur dans la fenetre.
     private int sizeOfWindow = 20;//taille de la fenetre d'envoi
 
     public SenderProtocol(IPHost host, int numberOfPackage) {

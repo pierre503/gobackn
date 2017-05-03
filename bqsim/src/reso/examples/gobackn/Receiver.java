@@ -11,7 +11,6 @@ import reso.ip.IPLayer;
 
 /**
  *
- * @author pierre
  */
 public class Receiver extends AbstractApplication {
 

@@ -15,7 +15,6 @@ import reso.ip.IPInterfaceListener;
 
 /**
  *
- * @author pierre
  */
 public class SenderProtocol
         implements IPInterfaceListener {

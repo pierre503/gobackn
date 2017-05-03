@@ -12,7 +12,6 @@ import reso.ip.IPLayer;
 
 /**
  *
- * @author pierre
  */
 public class Sender extends AbstractApplication {
 

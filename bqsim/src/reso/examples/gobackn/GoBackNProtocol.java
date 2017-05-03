@@ -46,7 +46,6 @@ public class GoBackNProtocol
 
     /**
      * Cette methode verifie si le numero de sequence envoye est celui voulu.
-     *
      * @return true si le numero de sequence recu est le numero voulu, false
      * sinon.
 	*

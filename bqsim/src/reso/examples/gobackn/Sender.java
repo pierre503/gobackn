@@ -19,7 +19,7 @@ public class Sender extends AbstractApplication {
     private final IPAddress dst;
     private static int numberOfPackage;
 
-    public Sender(IPHost host, IPAddress dst,int numberOfPackage) {
+    public Sender(IPHost host, IPAddress dst, int numberOfPackage) {
         super(host, "sender");
         this.dst = dst;
         ip = host.getIPLayer();
@@ -27,8 +27,8 @@ public class Sender extends AbstractApplication {
     }
 
     public void start()
-        throws Exception {
-        ip.addListener(SenderProtocol.IP_PROTO_SenderProtocol, new SenderProtocol((IPHost) host,numberOfPackage));
+            throws Exception {
+        ip.addListener(SenderProtocol.IP_PROTO_SenderProtocol, new SenderProtocol((IPHost) host, numberOfPackage));
         ip.send(IPAddress.ANY, dst, GoBackNProtocol.IP_PROTO_GoBackN, SenderProtocol.getPackageToSend().get(0));
     }
 

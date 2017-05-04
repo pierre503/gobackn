@@ -29,13 +29,12 @@ public class SenderProtocol
     private static ArrayList<PayloadMessage> packageToSend = new ArrayList<PayloadMessage>();//liste des package a envoyer.
     private int cursorSenderWindow = 1;//position du curseur dans la fenetre.
 
-   // private static boolean testTimer=false;
+    // private static boolean testTimer=false;
     private int sizeOfWindow = 1;//taille de la fenetre d'envoi
     private int ssTresh = 5;
     private int numberOfDuplicateAck = 0;//nombre de ack dupliquer.
     private int lastAck;//dernier ack connu.
     private int lostPercentage = 10;//pourcentage de perte de package.
-
 
     public SenderProtocol(IPHost host, int numberOfPackage) {
         this.host = host;
@@ -59,13 +58,11 @@ public class SenderProtocol
                 Si on obtient le numero voulu on avance d'un element la fenetre,si le numero est plus grand on "saute" jusque ce numero la car on est en go-back-n et si on a un numero plus petit on renvoi la fenetre actuel.
          */
 
-        
-        if (sequenceN==-1){
-        	// Reception du paquet test afin de determiner le RTT
-        	Timer.setArrivalTimer(System.currentTimeMillis());
-        	actualSequenceNumber=0;
-        }
-        else if (sequenceN >= this.actualSequenceNumber) {
+        if (sequenceN == -1) {
+            // Reception du paquet test afin de determiner le RTT
+            Timer.setArrivalTimer(System.currentTimeMillis());
+            actualSequenceNumber = 0;
+        } else if (sequenceN >= this.actualSequenceNumber) {
             numberOfDuplicateAck = 0;
             if (sizeOfWindow < ssTresh) {
                 sizeOfWindow += sizeOfWindow;
@@ -114,34 +111,32 @@ public class SenderProtocol
      * @throws Exception
      */
     public void sendPackageOfWindow(IPInterfaceAdapter src, Datagram datagram) throws Exception {
-    	// Lancement d un paquet test afin de determiner le RTT
-    	if (actualSequenceNumber==-1) {
-    		host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_GoBackN, 
-    				this.packageToSend.get(cursorSenderWindow + actualSequenceNumber));
-    		Timer.setDepartlTimer(System.currentTimeMillis());
-    	}
-    	
-    	else {
-        int numberOfPackageToSend = sizeOfWindow - cursorSenderWindow;
-        for (int i = 0; i < numberOfPackageToSend; i++) {
+        // Lancement d un paquet test afin de determiner le RTT
+        if (actualSequenceNumber == -1) {
+            host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_GoBackN,
+                    this.packageToSend.get(cursorSenderWindow + actualSequenceNumber));
+            Timer.setDepartlTimer(System.currentTimeMillis());
+        } else {
+            int numberOfPackageToSend = sizeOfWindow - cursorSenderWindow;
+            for (int i = 0; i < numberOfPackageToSend; i++) {
 
-            if (i + actualSequenceNumber < this.packageToSend.size() - 1) {
-                Random r = new Random();
-                int pLP = r.nextInt(101);//tirage au sort d'un nombre entre 0 et 100 pour savoir si on perd le packet ou pas.
-                
-                if (pLP > this.lostPercentage) {
-                    System.out.println("Sender of Message (" + (int) (host.getNetwork().getScheduler().getCurrentTime() * 1000) + "ms)"
-                            + " host=" + host.name + ", dgram.src=" + datagram.src + ", dgram.dst="
-                            + datagram.dst + ", iif=" + src + ", message=" + this.packageToSend.get(cursorSenderWindow + actualSequenceNumber).getPayload() + ", counter=" + (cursorSenderWindow + actualSequenceNumber));
-                    host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_GoBackN, this.packageToSend.get(cursorSenderWindow + actualSequenceNumber));
-                  // creation d un timer avec le numero de sequence attendu
-                new Timer(new Scheduler(),Timer.getArrivalTimer()-Timer.getDepartTimer()+5000000 , false , actualSequenceNumber, src,
-                		datagram, this);
+                if (i + actualSequenceNumber < this.packageToSend.size() - 1) {
+                    Random r = new Random();
+                    int pLP = r.nextInt(101);//tirage au sort d'un nombre entre 0 et 100 pour savoir si on perd le packet ou pas.
+
+                    if (pLP > this.lostPercentage) {
+                        System.out.println("Sender of Message (" + (int) (host.getNetwork().getScheduler().getCurrentTime() * 1000) + "ms)"
+                                + " host=" + host.name + ", dgram.src=" + datagram.src + ", dgram.dst="
+                                + datagram.dst + ", iif=" + src + ", message=" + this.packageToSend.get(cursorSenderWindow + actualSequenceNumber).getPayload() + ", counter=" + (cursorSenderWindow + actualSequenceNumber));
+                        host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_GoBackN, this.packageToSend.get(cursorSenderWindow + actualSequenceNumber));
+                        // creation d un timer avec le numero de sequence attendu
+                        new Timer(new Scheduler(), Timer.getArrivalTimer() - Timer.getDepartTimer() + 5000000, false, actualSequenceNumber, src,
+                                datagram, this);
+                    }
                 }
+                cursorSenderWindow += 1;
             }
-            cursorSenderWindow += 1;
         }
-    	}
     }
 
     public void sendPackageOutTimer(IPInterfaceAdapter src, Datagram datagram) throws Exception {

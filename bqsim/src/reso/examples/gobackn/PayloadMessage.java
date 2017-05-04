@@ -1,4 +1,3 @@
-
 package reso.examples.gobackn;
 
 import java.util.Random;
@@ -42,4 +41,3 @@ public class PayloadMessage implements Message {
         return payload.getBytes().length;
     }
 }
-

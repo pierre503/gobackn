@@ -1,5 +1,6 @@
 package reso.examples.gobackn;
 
+import java.util.Random;
 import static reso.examples.gobackn.SenderProtocol.IP_PROTO_SenderProtocol;
 import reso.ip.Datagram;
 import reso.ip.IPAddress;
@@ -14,6 +15,7 @@ public class GoBackNProtocol
 
     private final IPHost host;
     private int actualSequenceNumber = 0;
+    private int lostPercentage = 10;//pourcentage de perte de package.
 
     public GoBackNProtocol(IPHost host) {
         this.host = host;
@@ -29,7 +31,7 @@ public class GoBackNProtocol
 
         String sequenceSN = msg.getPayload().substring(0, 32);
         int sequenceNumber = Integer.parseInt(sequenceSN, 2);
-        
+
         int ack = 0;
         if (sequenceChecker(sequenceNumber)) {
             ack = actualSequenceNumber;
@@ -38,17 +40,23 @@ public class GoBackNProtocol
             ack = actualSequenceNumber - 1;
         }
         AckMessage ackMessage = new AckMessage(ack);
-        System.out.println("ACK (" + (int) (host.getNetwork().getScheduler().getCurrentTime() * 1000) + "ms)"
-                + " host=" + host.name + ", dgram.src=" + datagram.src + ", dgram.dst="
-                + datagram.dst + ", iif=" + src + ", counter=" + ack);
-        host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SenderProtocol, ackMessage);
+
+        Random r = new Random();
+        int pLP = r.nextInt(101);//tirage au sort d'un nombre entre 0 et 100 pour savoir si on perd le packet ou pas.
+        if (pLP > this.lostPercentage) {
+            System.out.println("ACK (" + (int) (host.getNetwork().getScheduler().getCurrentTime() * 1000) + "ms)"
+                    + " host=" + host.name + ", dgram.src=" + datagram.src + ", dgram.dst="
+                    + datagram.dst + ", iif=" + src + ", counter=" + ack);
+            host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SenderProtocol, ackMessage);
+        }
     }
 
     /**
      * Cette methode verifie si le numero de sequence envoye est celui voulu.
+     *
      * @return true si le numero de sequence recu est le numero voulu, false
      * sinon.
-	*
+     *
      */
     public boolean sequenceChecker(int sequenceNumber) {
         return actualSequenceNumber == sequenceNumber;

@@ -6,13 +6,11 @@
 package reso.examples.gobackn;
 
 import reso.common.AbstractApplication;
-import reso.examples.pingpong.PingPongProtocol;
 import reso.ip.IPHost;
 import reso.ip.IPLayer;
 
 /**
  *
- * @author pierre
  */
 public class Receiver extends AbstractApplication {
 

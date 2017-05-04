@@ -30,7 +30,6 @@ public class Sender extends AbstractApplication {
         throws Exception {
         ip.addListener(SenderProtocol.IP_PROTO_SenderProtocol, new SenderProtocol((IPHost) host,numberOfPackage));
         ip.send(IPAddress.ANY, dst, GoBackNProtocol.IP_PROTO_GoBackN, SenderProtocol.getPackageToSend().get(0));
-        System.out.println("premier element lance");//voir avec jeremy si on ne peut pas envoyer directement plusieurs elements.
     }
 
     public void stop() {

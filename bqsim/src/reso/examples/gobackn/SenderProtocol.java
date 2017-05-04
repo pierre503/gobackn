@@ -6,6 +6,7 @@
 package reso.examples.gobackn;
 
 import java.util.ArrayList;
+import java.util.Random;
 import static reso.examples.gobackn.GoBackNProtocol.IP_PROTO_GoBackN;
 import reso.ip.Datagram;
 import reso.ip.IPAddress;
@@ -27,8 +28,14 @@ public class SenderProtocol
     private static int actualSequenceNumber = -1;//numero de sequence attendu.
     private static ArrayList<PayloadMessage> packageToSend = new ArrayList<PayloadMessage>();//liste des package a envoyer.
     private int cursorSenderWindow = 1;//position du curseur dans la fenetre.
-    private int sizeOfWindow = 20;//taille de la fenetre d'envoi
+
    // private static boolean testTimer=false;
+    private int sizeOfWindow = 1;//taille de la fenetre d'envoi
+    private int ssTresh = 5;
+    private int numberOfDuplicateAck = 0;//nombre de ack dupliquer.
+    private int lastAck;//dernier ack connu.
+    private int lostPercentage = 10;//pourcentage de perte de package.
+
 
     public SenderProtocol(IPHost host, int numberOfPackage) {
         this.host = host;
@@ -36,11 +43,11 @@ public class SenderProtocol
             packageToSend.add(new PayloadMessage(i));
         }
     }
-    
+
     /**
      * Cette methode permet de lancer une premiere fois l'application.
      */
-    public void launch(IPInterfaceAdapter src, Datagram datagram) throws Exception{
+    public void launch(IPInterfaceAdapter src, Datagram datagram) throws Exception {
         sendPackageOfWindow(src, datagram);
     }
 
@@ -51,6 +58,7 @@ public class SenderProtocol
         /*cette partie verifie si on obtient le numero voulu.
                 Si on obtient le numero voulu on avance d'un element la fenetre,si le numero est plus grand on "saute" jusque ce numero la car on est en go-back-n et si on a un numero plus petit on renvoi la fenetre actuel.
          */
+
         
         if (sequenceN==-1){
         	// Reception du paquet test afin de determiner le RTT
@@ -58,18 +66,37 @@ public class SenderProtocol
         	actualSequenceNumber=0;
         }
         else if (sequenceN >= this.actualSequenceNumber) {
-            if((this.actualSequenceNumber + this.cursorSenderWindow)<this.packageToSend.size()){
+            numberOfDuplicateAck = 0;
+            if (sizeOfWindow < ssTresh) {
+                sizeOfWindow += sizeOfWindow;
+            } else {
+                sizeOfWindow += 1;
+            }
+
+            if ((this.actualSequenceNumber + this.cursorSenderWindow) < this.packageToSend.size()) {
                 if (sequenceN > this.actualSequenceNumber) {
-                    cursorSenderWindow -= sequenceN - this.actualSequenceNumber;
+                    cursorSenderWindow -= sequenceN - this.actualSequenceNumber + 1;
                     this.actualSequenceNumber = sequenceN + 1;
                 } else {
                     this.actualSequenceNumber += 1;
                     cursorSenderWindow -= 1;
                 }
+                numberOfDuplicateAck = 0;
+                lastAck = sequenceN;
                 sendPackageOfWindow(src, datagram);
             }
         } else {
+            if (lastAck == sequenceN) {
+                numberOfDuplicateAck++;
+                if (numberOfDuplicateAck == 3) {
+                    sizeOfWindow = sizeOfWindow / 2;
+                }
+            }
             cursorSenderWindow = 0;
+            if (lastAck != sequenceN) {
+                numberOfDuplicateAck = 0;
+            }
+            lastAck = sequenceN;
             sendPackageOfWindow(src, datagram);
         }
     }
@@ -77,7 +104,6 @@ public class SenderProtocol
     public static ArrayList<PayloadMessage> getPackageToSend() {
         return packageToSend;
     }
-    
 
     /**
      * Cette methode permet d'envoyer l'emlement se trouvant au niveau du
@@ -98,28 +124,33 @@ public class SenderProtocol
     	else {
         int numberOfPackageToSend = sizeOfWindow - cursorSenderWindow;
         for (int i = 0; i < numberOfPackageToSend; i++) {
-            if (i + actualSequenceNumber < this.packageToSend.size()-1) {
-                System.out.println("Sender of Message (" + (int) (host.getNetwork().getScheduler().getCurrentTime() * 1000) + "ms)"
-                        + " host=" + host.name + ", dgram.src=" + datagram.src + ", dgram.dst="
-                        + datagram.dst + ", iif=" + src+ ", message=" + this.packageToSend.get(cursorSenderWindow + actualSequenceNumber).getPayload() + ", counter=" + (cursorSenderWindow + actualSequenceNumber));
-                host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_GoBackN, this.packageToSend.get(cursorSenderWindow + actualSequenceNumber));
-                // creation d un timer avec le numero de sequence attendu
+
+            if (i + actualSequenceNumber < this.packageToSend.size() - 1) {
+                Random r = new Random();
+                int pLP = r.nextInt(101);//tirage au sort d'un nombre entre 0 et 100 pour savoir si on perd le packet ou pas.
+                
+                if (pLP > this.lostPercentage) {
+                    System.out.println("Sender of Message (" + (int) (host.getNetwork().getScheduler().getCurrentTime() * 1000) + "ms)"
+                            + " host=" + host.name + ", dgram.src=" + datagram.src + ", dgram.dst="
+                            + datagram.dst + ", iif=" + src + ", message=" + this.packageToSend.get(cursorSenderWindow + actualSequenceNumber).getPayload() + ", counter=" + (cursorSenderWindow + actualSequenceNumber));
+                    host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_GoBackN, this.packageToSend.get(cursorSenderWindow + actualSequenceNumber));
+                  // creation d un timer avec le numero de sequence attendu
                 new Timer(new Scheduler(),Timer.getArrivalTimer()-Timer.getDepartTimer()+5000000 , false , actualSequenceNumber, src,
                 		datagram, this);
+                }
             }
             cursorSenderWindow += 1;
         }
     	}
     }
-    
-    public void sendPackageOutTimer(IPInterfaceAdapter src, Datagram datagram) throws Exception{
-    	this.cursorSenderWindow = 0;
-    	sendPackageOfWindow(src, datagram);
+
+    public void sendPackageOutTimer(IPInterfaceAdapter src, Datagram datagram) throws Exception {
+        this.cursorSenderWindow = 0;
+        sendPackageOfWindow(src, datagram);
     }
-    
-    
-    public static int getActualSequenceNumber(){
-    	return actualSequenceNumber;
+
+    public static int getActualSequenceNumber() {
+        return actualSequenceNumber;
     }
 
 }

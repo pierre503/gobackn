@@ -31,28 +31,27 @@ public class GoBackNProtocol
 
         String sequenceSN = msg.getPayload().substring(0, 32);
         int sequenceNumber = Integer.parseInt(sequenceSN, 2);
-        
-        if(sequenceNumber ==-1){
-        	host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SenderProtocol, new AckMessage(-1));
-        }
-        else {
-        int ack = 0;
-        if (sequenceChecker(sequenceNumber)) {
-            ack = actualSequenceNumber;
-            actualSequenceNumber = actualSequenceNumber + 1;
-        } else if (actualSequenceNumber != 0) {
-            ack = actualSequenceNumber - 1;
-        }
-        AckMessage ackMessage = new AckMessage(ack);
 
-        Random r = new Random();
-        int pLP = r.nextInt(101);//tirage au sort d'un nombre entre 0 et 100 pour savoir si on perd le packet ou pas.
-        if (pLP > this.lostPercentage) {
-            System.out.println("ACK (" + (int) (host.getNetwork().getScheduler().getCurrentTime() * 1000) + "ms)"
-                    + " host=" + host.name + ", dgram.src=" + datagram.src + ", dgram.dst="
-                    + datagram.dst + ", iif=" + src + ", counter=" + ack);
-              host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SenderProtocol, ackMessage);
-          }
+        if (sequenceNumber == -1) {
+            host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SenderProtocol, new AckMessage(-1));
+        } else {
+            int ack = 0;
+            if (sequenceChecker(sequenceNumber)) {
+                ack = actualSequenceNumber;
+                actualSequenceNumber = actualSequenceNumber + 1;
+            } else if (actualSequenceNumber != 0) {
+                ack = actualSequenceNumber - 1;
+            }
+            AckMessage ackMessage = new AckMessage(ack);
+
+            Random r = new Random();
+            int pLP = r.nextInt(101);//tirage au sort d'un nombre entre 0 et 100 pour savoir si on perd le packet ou pas.
+            if (pLP > this.lostPercentage) {
+                System.out.println("ACK (" + (int) (host.getNetwork().getScheduler().getCurrentTime() * 1000) + "ms)"
+                        + " host=" + host.name + ", dgram.src=" + datagram.src + ", dgram.dst="
+                        + datagram.dst + ", iif=" + src + ", counter=" + ack);
+                host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SenderProtocol, ackMessage);
+            }
         }
     }
 

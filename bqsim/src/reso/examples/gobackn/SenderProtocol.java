@@ -12,6 +12,8 @@ import reso.ip.IPAddress;
 import reso.ip.IPHost;
 import reso.ip.IPInterfaceAdapter;
 import reso.ip.IPInterfaceListener;
+import reso.scheduler.AbstractScheduler;
+import reso.scheduler.Scheduler;
 
 /**
  *
@@ -22,10 +24,11 @@ public class SenderProtocol
     public static final int IP_PROTO_SenderProtocol = Datagram.allocateProtocolNumber("Sender");
 
     private final IPHost host;
-    private static int actualSequenceNumber = 0;//numero de sequence attendu.
+    private static int actualSequenceNumber = -1;//numero de sequence attendu.
     private static ArrayList<PayloadMessage> packageToSend = new ArrayList<PayloadMessage>();//liste des package a envoyer.
     private int cursorSenderWindow = 1;//position du curseur dans la fenetre.
     private int sizeOfWindow = 20;//taille de la fenetre d'envoi
+   // private static boolean testTimer=false;
 
     public SenderProtocol(IPHost host, int numberOfPackage) {
         this.host = host;
@@ -48,7 +51,13 @@ public class SenderProtocol
         /*cette partie verifie si on obtient le numero voulu.
                 Si on obtient le numero voulu on avance d'un element la fenetre,si le numero est plus grand on "saute" jusque ce numero la car on est en go-back-n et si on a un numero plus petit on renvoi la fenetre actuel.
          */
-        if (sequenceN >= this.actualSequenceNumber) {
+        
+        if (sequenceN==-1){
+        	// Reception du paquet test afin de determiner le RTT
+        	Timer.setArrivalTimer(System.currentTimeMillis());
+        	actualSequenceNumber=0;
+        }
+        else if (sequenceN >= this.actualSequenceNumber) {
             if((this.actualSequenceNumber + this.cursorSenderWindow)<this.packageToSend.size()){
                 if (sequenceN > this.actualSequenceNumber) {
                     cursorSenderWindow -= sequenceN - this.actualSequenceNumber;
@@ -79,6 +88,14 @@ public class SenderProtocol
      * @throws Exception
      */
     public void sendPackageOfWindow(IPInterfaceAdapter src, Datagram datagram) throws Exception {
+    	// Lancement d un paquet test afin de determiner le RTT
+    	if (actualSequenceNumber==-1) {
+    		host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_GoBackN, 
+    				this.packageToSend.get(cursorSenderWindow + actualSequenceNumber));
+    		Timer.setDepartlTimer(System.currentTimeMillis());
+    	}
+    	
+    	else {
         int numberOfPackageToSend = sizeOfWindow - cursorSenderWindow;
         for (int i = 0; i < numberOfPackageToSend; i++) {
             if (i + actualSequenceNumber < this.packageToSend.size()-1) {
@@ -86,15 +103,20 @@ public class SenderProtocol
                         + " host=" + host.name + ", dgram.src=" + datagram.src + ", dgram.dst="
                         + datagram.dst + ", iif=" + src+ ", message=" + this.packageToSend.get(cursorSenderWindow + actualSequenceNumber).getPayload() + ", counter=" + (cursorSenderWindow + actualSequenceNumber));
                 host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_GoBackN, this.packageToSend.get(cursorSenderWindow + actualSequenceNumber));
+                // creation d un timer avec le numero de sequence attendu
+                new Timer(new Scheduler(),Timer.getArrivalTimer()-Timer.getDepartTimer()+5000000 , false , actualSequenceNumber, src,
+                		datagram, this);
             }
             cursorSenderWindow += 1;
         }
+    	}
     }
     
     public void sendPackageOutTimer(IPInterfaceAdapter src, Datagram datagram) throws Exception{
     	this.cursorSenderWindow = 0;
     	sendPackageOfWindow(src, datagram);
     }
+    
     
     public static int getActualSequenceNumber(){
     	return actualSequenceNumber;

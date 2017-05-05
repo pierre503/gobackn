@@ -62,6 +62,8 @@ public class SenderProtocol
             // Reception du paquet test afin de determiner le RTT
             Timer.setArrivalTimer(System.currentTimeMillis());
             actualSequenceNumber = 0;
+            
+          // Si le ACK recu est plus grand que celui attendu  
         } else if (sequenceN >= this.actualSequenceNumber) {
             numberOfDuplicateAck = 0;
             if (sizeOfWindow < ssTresh) {
@@ -128,7 +130,9 @@ public class SenderProtocol
                         System.out.println("Sender of Message (" + (int) (host.getNetwork().getScheduler().getCurrentTime() * 1000) + "ms)"
                                 + " host=" + host.name + ", dgram.src=" + datagram.src + ", dgram.dst="
                                 + datagram.dst + ", iif=" + src + ", message=" + this.packageToSend.get(cursorSenderWindow + actualSequenceNumber).getPayload() + ", counter=" + (cursorSenderWindow + actualSequenceNumber));
+                        // Envoi du paquet
                         host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_GoBackN, this.packageToSend.get(cursorSenderWindow + actualSequenceNumber));
+                        
                         // creation d un timer avec le numero de sequence attendu
                         new Timer(new Scheduler(), Timer.getArrivalTimer() - Timer.getDepartTimer() + 5000000, false, actualSequenceNumber, src,
                                 datagram, this);

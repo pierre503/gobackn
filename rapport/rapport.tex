@@ -1,0 +1,49 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[utf8]{inputenc}
+
+%opening
+\title{Projet : Implémentation d'un protocole de type Go-Back-N avec contrôle de la congestion}
+\author{Maazouz Mehdi, Zielinski Pierre}
+
+\begin{document}
+
+\maketitle
+\textbf{Annee Academique 2016-2017}\\
+\tableofcontents
+\newpage
+
+\section{Introduction}
+Dans le cadre du cours de Reseau, nous avons eu comme objectif d'implémenter un protocole de type Go-Back-N
+avec un contrôle de la congestion de type Reno au sein d'un simulateur fourni par les professeurs. Le tout était 
+à effectuer en Java.
+
+\section{Lancement}
+Lorsque vous voulez lancer le projet, vous pouvez définir plusieurs varibales qui influeront sur le programme.
+Tout d'abord, vous pouvez définir un Timer par défaut, autrement dit, vous pouvez accordé un temps fixe qui servira
+comme paramètre lorsque les timers se lanceront.
+
+De plus, la deuxième varibale que vous pouvez définir est le treshold.
+
+Enfin, si vous voulez tester plus aisément la perte de paquets, vous pouvez définir le pourcentage de perte des paquets sur le lien.
+( il doit être compris en 0 et 100 ).
+
+Pour plus de facilité lors de l'Implémentation, à partir du moment où vous souhaitez changer une de ces variables, veuillez indiquer 0 pour les
+autres.
+
+\section{Problèmes rencontrés}
+Tout au long du développement, plusieurs problèmes ont été rencontrés.\\
+Afin de déterminer le temps de RTT d'un paquet, nous avions décidé d'utiliser un paquet test composé d'un numéro de séquence -1.
+Cependant, due à notre implémentation, le numéro de séquence est transformé en binaire. Ce qui a causé quelques problèmes étant donné
+que l'entier était négatif. Nous avons donc décidé que le numéro de séquence 0 serait notre paquet test.
+\\
+Suite à une discussion avec les professeurs, nous avons choisis d'exlure la probabilité de perte sur le paquet test.
+Ce qui permet de recevoir un ACK(0) sans aucune ambiguïté.
+
+\section{Conclusion}
+Plusieurs objectifs étaient à atteindre lors de la réalisation de ce projet. Tout d'abord, nous avons dû implémenter le 
+protocole de type Go-Back-N, nous avons également implémenter le ``pipelining'' permettant l'envois de plusieurs paquets.
+De plus , nous avons également implémenté la congestion comme demandé par les professeurs.\\
+
+Le système de log ainsi que le ``plot'' ont été fournis afin de faciliter les tests.
+
+\end{document}

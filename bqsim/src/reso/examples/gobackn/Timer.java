@@ -11,7 +11,6 @@ public class Timer extends AbstractTimer {
      * Cette classe permet de creer un timer afin de suivre l evolution du
      * paquet sur le lien
      */
-
     private int number;
     private IPInterfaceAdapter src;
     private Datagram datagram;
@@ -31,8 +30,11 @@ public class Timer extends AbstractTimer {
 
     @Override
     protected void run() throws Exception {
+
+        System.out.println("fin timer");
         if (number <= senderProtocol.getActualSequenceNumber()) {
             try {
+                System.out.println("gestion timer");
                 senderProtocol.sendPackageOutTimer(src, datagram);
             } catch (Exception e) {
                 // TODO Auto-generated catch block
@@ -50,7 +52,7 @@ public class Timer extends AbstractTimer {
         return departTimer;
     }
 
-    public static void setDepartlTimer(double newVal) {
+    public static void setDepartTimer(double newVal) {
         departTimer = newVal;
     }
 

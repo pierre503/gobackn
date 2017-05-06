@@ -32,8 +32,9 @@ public class GoBackNProtocol
         String sequenceSN = msg.getPayload().substring(0, 32);
         int sequenceNumber = Integer.parseInt(sequenceSN, 2);
 
-        if (sequenceNumber == -1) {
-            host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SenderProtocol, new AckMessage(-1));
+        if (sequenceNumber == 0) {
+            host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SenderProtocol, new AckMessage(0));//on fais ca separement parce que on n'a pas besoin du package test.
+            this.actualSequenceNumber ++;
         } else {
             int ack = 0;
             if (sequenceChecker(sequenceNumber)) {

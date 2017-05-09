@@ -117,7 +117,7 @@ public class SenderProtocol
         if (actualSequenceNumber == -1) {
             host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_GoBackN,
                     this.packageToSend.get(cursorSenderWindow + actualSequenceNumber));
-            Timer.setDepartlTimer(System.currentTimeMillis());
+            Timer.setDepartTimer(System.currentTimeMillis());
         } else {
             int numberOfPackageToSend = sizeOfWindow - cursorSenderWindow;
             for (int i = 0; i < numberOfPackageToSend; i++) {

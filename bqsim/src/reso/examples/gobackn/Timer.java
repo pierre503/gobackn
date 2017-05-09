@@ -50,7 +50,7 @@ public class Timer extends AbstractTimer {
         return departTimer;
     }
 
-    public static void setDepartlTimer(double newVal) {
+    public static void setDepartTimer(double newVal) {
         departTimer = newVal;
     }
 

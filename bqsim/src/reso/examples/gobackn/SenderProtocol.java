@@ -73,7 +73,8 @@ public class SenderProtocol
         /*cette partie verifie si on obtient le numero voulu.
                 Si on obtient le numero voulu on avance d'un element la fenetre,si le numero est plus grand on "saute" jusque ce numero la car on est en go-back-n et si on a un numero plus petit on renvoi la fenetre actuel.
          */
-
+        System.out.println("---------------------------------------------------");
+        System.out.println("Ack receive: " + sequenceN + ",Ack expected: " + this.actualSequenceNumber);
         if (sequenceN == this.packageToSend.size() - 1) {
             if (this.actualTimer != null) {
                 this.actualTimer.stop();

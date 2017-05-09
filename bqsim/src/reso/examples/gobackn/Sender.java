@@ -28,8 +28,10 @@ public class Sender extends AbstractApplication {
 
     public void start()
             throws Exception {
-        ip.addListener(SenderProtocol.IP_PROTO_SenderProtocol, new SenderProtocol((IPHost) host, numberOfPackage));
-        ip.send(IPAddress.ANY, dst, GoBackNProtocol.IP_PROTO_GoBackN, SenderProtocol.getPackageToSend().get(0));
+        SenderProtocol senderProtocol = new SenderProtocol((IPHost) host, numberOfPackage);
+        ip.addListener(SenderProtocol.IP_PROTO_SenderProtocol, senderProtocol);
+        senderProtocol.launch(dst);
+        
     }
 
     public void stop() {

@@ -30,11 +30,8 @@ public class Timer extends AbstractTimer {
 
     @Override
     protected void run() throws Exception {
-
-        System.out.println("fin timer");
         if (number <= senderProtocol.getActualSequenceNumber()) {
             try {
-                System.out.println("gestion timer");
                 senderProtocol.sendPackageOutTimer(src, datagram);
             } catch (Exception e) {
                 // TODO Auto-generated catch block

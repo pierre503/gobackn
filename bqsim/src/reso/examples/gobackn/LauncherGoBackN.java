@@ -17,8 +17,6 @@ import reso.scheduler.AbstractScheduler;
 import reso.scheduler.Scheduler;
 import reso.utilities.NetworkBuilder;
 
-
-
 public class LauncherGoBackN {
 
     /* Enable or disable packet capture (can be used to observe ARP messages) */
@@ -53,11 +51,27 @@ public class LauncherGoBackN {
             if (ENABLE_SNIFFER) {
                 host1.addApplication(new AppSniffer(host1, new String[]{"eth0"}));
             }
-            host1.addApplication(new Sender(host1, IP_ADDR2, 300));
+            if (args.length > 1) {
+                if (args.length > 2) {
+                    if (args.length > 3) {
+                        host1.addApplication(new Sender(host1, IP_ADDR2, Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2])));
+                    } else {
+                        host1.addApplication(new Sender(host1, IP_ADDR2, Integer.parseInt(args[0]), Integer.parseInt(args[1])));
+                    }
+                } else {
+                    host1.addApplication(new Sender(host1, IP_ADDR2, Integer.parseInt(args[0])));
+                }
+            } else {
+                host1.addApplication(new Sender(host1, IP_ADDR2, 300));
+            }
 
             IPHost host2 = NetworkBuilder.createHost(network, "H2", IP_ADDR2, MAC_ADDR2);
             host2.getIPLayer().addRoute(IP_ADDR1, "eth0");
-            host2.addApplication(new Receiver(host2));
+            if (args.length > 4) {
+                host2.addApplication(new Receiver(host2, Integer.parseInt(args[3])));
+            } else {
+                host2.addApplication(new Receiver(host2));
+            }
 
             EthernetInterface h1_eth0 = (EthernetInterface) host1.getInterfaceByName("eth0");
             EthernetInterface h2_eth0 = (EthernetInterface) host2.getInterfaceByName("eth0");
@@ -76,4 +90,3 @@ public class LauncherGoBackN {
     }
 
 }
-

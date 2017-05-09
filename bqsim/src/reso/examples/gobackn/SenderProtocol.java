@@ -28,19 +28,31 @@ public class SenderProtocol
     private int cursorSenderWindow = 1;//position du curseur dans la fenetre.
 
     // private static boolean testTimer=false;
-    private int sizeOfWindow = 1;//taille de la fenetre d'envoi
-    private int ssTresh = 5;
+    private int sizeOfWindow = 1;//taille de la fenetre d'envoi.
+    private int ssTresh;
     private int numberOfDuplicateAck = 0;//nombre de ack dupliquer.
     private int lastAck;//dernier ack connu.
     private int lostPercentage = 10;//pourcentage de perte de package.
     private Timer actualTimer;
+    private float restOfAI = 0;
 
-    public SenderProtocol(IPHost host, int numberOfPackage) {
+    public SenderProtocol(IPHost host, int numberOfPackage, int ssTresh) {
         this.host = host;
         packageToSend.add(new PayloadMessage(0));
         for (int i = 1; i < numberOfPackage + 1; i++) {
             packageToSend.add(new PayloadMessage(i));
         }
+        this.ssTresh = ssTresh;
+    }
+
+    public SenderProtocol(IPHost host, int numberOfPackage, int ssTresh, int lostPercentage) {
+        this.host = host;
+        packageToSend.add(new PayloadMessage(0));
+        for (int i = 1; i < numberOfPackage + 1; i++) {
+            packageToSend.add(new PayloadMessage(i));
+        }
+        this.lostPercentage = lostPercentage;
+        this.ssTresh = ssTresh;
     }
 
     /**
@@ -49,8 +61,9 @@ public class SenderProtocol
     public void launch(IPAddress address) throws Exception {
         host.getIPLayer().send(IPAddress.ANY, address, IP_PROTO_GoBackN,
                 this.packageToSend.get(0));
-        System.out.println("package test launch");
         Timer.setDepartTimer(System.currentTimeMillis());
+        System.out.println("---------------------------------------------------");
+        System.out.println("Package test launch");
     }
 
     @Override
@@ -64,6 +77,7 @@ public class SenderProtocol
         if (sequenceN == this.packageToSend.size() - 1) {
             if (this.actualTimer != null) {
                 this.actualTimer.stop();
+                this.actualTimer = null;
             }
 
             // Si le ACK recu est plus grand que celui attendu  
@@ -71,53 +85,54 @@ public class SenderProtocol
             if (sequenceN == 0) {
                 // Reception du paquet test afin de determiner le RTT
                 Timer.setArrivalTimer(System.currentTimeMillis());
+                System.out.println("Package test recover, value calculated for the timer:" + (Timer.getArrivalTimer() - Timer.getDepartTimer() + 50000));
+                System.out.println("---------------------------------------------------");
             }
-            numberOfDuplicateAck = 0;
+            this.numberOfDuplicateAck = 0;
             if (sequenceN != 0) {
-                if (sizeOfWindow < ssTresh) {
-                    sizeOfWindow += sizeOfWindow;
-                } else {
-                    sizeOfWindow += 1;
+                for (int i = 0; i < sequenceN - this.actualSequenceNumber + 1; i++) {
+                    if (sizeOfWindow < ssTresh) {
+                        sizeOfWindow += 1;
+                    } else {
+                        float additiveIncreseNumber = 1 / (float) sizeOfWindow; //car MSS²/cwd = 1/cwd dans ce cas-ci.
+                        int additiveIncreseNumberI = (int) additiveIncreseNumber;
+                        this.restOfAI = restOfAI + additiveIncreseNumber - additiveIncreseNumberI;
+                        sizeOfWindow += additiveIncreseNumberI + (int) restOfAI;
+                        this.restOfAI = this.restOfAI - (int) restOfAI;
+                    }
                 }
             }
+            if (sequenceN > this.actualSequenceNumber) {
+                cursorSenderWindow -= sequenceN - this.actualSequenceNumber + 1;
+                this.actualSequenceNumber = sequenceN + 1;
+            } else {
+                this.actualSequenceNumber += 1;
+                cursorSenderWindow -= 1;
+            }
+            gestionDuTimer(src, datagram);
             if ((this.actualSequenceNumber + this.cursorSenderWindow) < this.packageToSend.size()) {
-                if (sequenceN > this.actualSequenceNumber) {
-                    cursorSenderWindow -= sequenceN - this.actualSequenceNumber + 1;
-                    this.actualSequenceNumber = sequenceN + 1;
-                } else {
-                    this.actualSequenceNumber += 1;
-                    cursorSenderWindow -= 1;
-                }
-                if (this.actualTimer != null) {
-                    this.actualTimer.stop();
-                }
-                // creation d un timer avec le numero de sequence attendu
-                actualTimer = new Timer(host.getNetwork().getScheduler(), Timer.getArrivalTimer() - Timer.getDepartTimer() + 5000000, false, actualSequenceNumber, src, datagram, this);
-                this.actualTimer.start();
-                this.numberOfDuplicateAck = 0;
                 lastAck = sequenceN;
                 sendPackageOfWindow(src, datagram);
             }
-            if (lastAck == sequenceN) {
-                this.numberOfDuplicateAck++;
-                if (this.numberOfDuplicateAck == 3) {
-                    this.sizeOfWindow = sizeOfWindow / 2;
-                    this.ssTresh = this.sizeOfWindow;
-                }
+        } else if (lastAck == sequenceN) {
+            this.numberOfDuplicateAck++;
+            if (this.numberOfDuplicateAck == 3) {
+                System.out.println("---------------------------");
+                System.out.println("/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\");
+                System.out.println("---------------------------");
+                System.out.println("3 ACK duplicate");
+                System.out.println("The lost package is the package number:" + this.actualSequenceNumber);
+                System.out.println("last window size: " + this.sizeOfWindow + ", new window size: " + (sizeOfWindow / 2));
+                System.out.println("last ssTresh: " + this.ssTresh + ", new ssTresh: " + (sizeOfWindow / 2));
+                this.sizeOfWindow = sizeOfWindow / 2;
+                this.ssTresh = this.sizeOfWindow;
+                gestionDuTimer(src, datagram);
+                cursorSenderWindow = 0;
+                this.restOfAI = 0;
+                sendPackageOfWindow(src, datagram);
             }
-            cursorSenderWindow = 0;
-            if (this.actualTimer != null) {
-                this.actualTimer.stop();
-            }
-            // creation d un timer avec le numero de sequence attendu
-            actualTimer = new Timer(host.getNetwork().getScheduler(), Timer.getArrivalTimer() - Timer.getDepartTimer() + 5000000, false, actualSequenceNumber, src, datagram, this);
-            this.actualTimer.run();
-            if (lastAck != sequenceN) {
-                this.numberOfDuplicateAck = 0;
-            }
-            lastAck = sequenceN;
-            sendPackageOfWindow(src, datagram);
         }
+
     }
 
     public static ArrayList<PayloadMessage> getPackageToSend() {
@@ -139,9 +154,11 @@ public class SenderProtocol
                     this.packageToSend.get(cursorSenderWindow + actualSequenceNumber));
             Timer.setDepartTimer(System.currentTimeMillis());
         } else {
+            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
+            System.out.println("Size of the sending window: " + sizeOfWindow + ", with already " + cursorSenderWindow + " message(s) sent.");
             int numberOfPackageToSend = sizeOfWindow - cursorSenderWindow;
             for (int i = 0; i < numberOfPackageToSend; i++) {
-                if (i + actualSequenceNumber < this.packageToSend.size() - 1) {
+                if (i + actualSequenceNumber < this.packageToSend.size()) {
                     Random r = new Random();
                     int pLP = r.nextInt(101);//tirage au sort d'un nombre entre 0 et 100 pour savoir si on perd le packet ou pas.
                     if (pLP > this.lostPercentage) {
@@ -154,21 +171,23 @@ public class SenderProtocol
                 }
                 cursorSenderWindow += 1;
             }
+            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
         }
     }
 
     public void sendPackageOutTimer(IPInterfaceAdapter src, Datagram datagram) throws Exception {
-        System.out.println("on gere");
+        System.out.println("---------------------------");
+        System.out.println("/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\/!\\");
+        System.out.println("---------------------------");
+        System.out.println("Loss event => timer exception launch");
+        System.out.println("The lost package is the package number:" + this.actualSequenceNumber);
+        System.out.println("Last window size: " + this.sizeOfWindow + ", new window size: " + 1);
+        System.out.println("Last ssTresh: " + this.ssTresh + ", new ssTresh: " + (sizeOfWindow / 2));
         this.cursorSenderWindow = 0;
-        this.ssTresh = this.ssTresh / 2;
+        this.ssTresh = sizeOfWindow / 2;
         this.sizeOfWindow = 1;
-        if (this.actualTimer != null) {
-            this.actualTimer.stop();
-        }
-        // creation d un timer avec le numero de sequence attendu
-        actualTimer = new Timer(host.getNetwork().getScheduler(), Timer.getArrivalTimer() - Timer.getDepartTimer() + 5000000, false, actualSequenceNumber, src, datagram, this);
-        this.actualTimer.start();
-        System.out.println("on relance");
+        gestionDuTimer(src, datagram);
+        this.restOfAI = 0;
         sendPackageOfWindow(src, datagram);
     }
 
@@ -176,8 +195,13 @@ public class SenderProtocol
         return actualSequenceNumber;
     }
 
-    public void gestionDuTimer() {
-
+    public void gestionDuTimer(IPInterfaceAdapter src, Datagram datagram) {
+        if (this.actualTimer != null) {
+            this.actualTimer.stop();
+        }
+        // creation d un timer avec le numero de sequence attendu
+        actualTimer = new Timer(host.getNetwork().getScheduler(), Timer.getArrivalTimer() - Timer.getDepartTimer() + 50000, false, actualSequenceNumber, src, datagram, this);
+        this.actualTimer.start();
     }
 
 }

@@ -15,14 +15,27 @@ import reso.ip.IPLayer;
 public class Receiver extends AbstractApplication {
 
     private final IPLayer ip;
+    private int lostPercentage = -1;
 
     public Receiver(IPHost host) {
         super(host, "receiver");
         ip = host.getIPLayer();
     }
+    
+        public Receiver(IPHost host, int lostPercentage) {
+        super(host, "receiver");
+        ip = host.getIPLayer();
+        this.lostPercentage = lostPercentage;
+    }
 
     public void start() {
-        ip.addListener(GoBackNProtocol.IP_PROTO_GoBackN, new GoBackNProtocol((IPHost) host));
+        GoBackNProtocol goBackNProtocol;
+        if(lostPercentage == -1){
+            goBackNProtocol = new GoBackNProtocol((IPHost) host);
+        }else{
+            goBackNProtocol = new GoBackNProtocol((IPHost) host, lostPercentage);
+        }
+        ip.addListener(GoBackNProtocol.IP_PROTO_GoBackN, goBackNProtocol);
     }
 
     public void stop() {

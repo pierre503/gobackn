@@ -21,6 +21,11 @@ public class GoBackNProtocol
         this.host = host;
     }
 
+    public GoBackNProtocol(IPHost host, int lostPercentage) {
+        this.host = host;
+        this.lostPercentage = lostPercentage;
+    }
+
     @Override
     public void receive(IPInterfaceAdapter src, Datagram datagram) throws Exception {
         /*
@@ -34,7 +39,7 @@ public class GoBackNProtocol
 
         if (sequenceNumber == 0) {
             host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SenderProtocol, new AckMessage(0));//on fais ca separement parce que on n'a pas besoin du package test.
-            this.actualSequenceNumber ++;
+            this.actualSequenceNumber++;
         } else {
             int ack = 0;
             if (sequenceChecker(sequenceNumber)) {

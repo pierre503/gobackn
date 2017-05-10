@@ -5,6 +5,13 @@
  */
 package reso.examples.gobackn;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+
 import reso.common.Link;
 import reso.common.Network;
 import reso.ethernet.EthernetAddress;
@@ -21,6 +28,8 @@ public class LauncherGoBackN {
 
     /* Enable or disable packet capture (can be used to observe ARP messages) */
     private static final boolean ENABLE_SNIFFER = false;
+    public static FileWriter file;
+    public static BufferedWriter plot;
 
     /* A message is sent from the sender to the receiver with a counter initialized to 5.
 	 * When the receiver get the message it decreases the counter and send the message back
@@ -78,11 +87,20 @@ public class LauncherGoBackN {
 
             // Connect both interfaces with a 5000km long link
             new Link<EthernetFrame>(h1_eth0, h2_eth0, 5000000, 100000);
+            if (new File("plot.txt").isFile()){
+            	System.out.println("EXISTE");
+            	new File("plot.txt").delete();
+            }
+            file = new FileWriter("plot.txt");
+            plot = new BufferedWriter(file);
 
             host1.start();
             host2.start();
 
             scheduler.run();
+            
+            LauncherGoBackN.plot.close();
+            LauncherGoBackN.file.close();
         } catch (Exception e) {
             System.err.println(e.getMessage());
             e.printStackTrace(System.err);

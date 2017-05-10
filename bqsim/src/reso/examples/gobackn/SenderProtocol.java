@@ -133,6 +133,13 @@ public class SenderProtocol
                 sendPackageOfWindow(src, datagram);
             }
         }
+       
+        LauncherGoBackN.plot.write(Double.toString(System.currentTimeMillis()*1000));  
+        LauncherGoBackN.plot.write("   ");
+        LauncherGoBackN.plot.write(Integer.toString(sizeOfWindow));
+        LauncherGoBackN.plot.write("\n");
+        LauncherGoBackN.plot.flush();
+        
 
     }
 

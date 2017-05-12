@@ -13,6 +13,7 @@ import reso.ip.IPAddress;
 import reso.ip.IPHost;
 import reso.ip.IPInterfaceAdapter;
 import reso.ip.IPInterfaceListener;
+import reso.scheduler.AbstractScheduler;
 
 /**
  *
@@ -134,7 +135,7 @@ public class SenderProtocol
             }
         }
        
-        LauncherGoBackN.plot.write(Double.toString(System.currentTimeMillis()));  
+        LauncherGoBackN.plot.write(Integer.toString((int)(host.getNetwork().getScheduler().getCurrentTime() *1000)));  
         LauncherGoBackN.plot.write("   ");
         LauncherGoBackN.plot.write(Integer.toString(sizeOfWindow));
         LauncherGoBackN.plot.write("\n");

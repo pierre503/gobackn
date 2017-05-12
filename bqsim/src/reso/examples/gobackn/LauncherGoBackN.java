@@ -93,7 +93,7 @@ public class LauncherGoBackN {
             }
             
             //cration du fichier pour les log
-            file = new FileWriter("bqsim/src/reso/examples/gobackn/data/plot.txt");
+            file = new FileWriter("bqsim/src/reso/examples/gobackn/data/log.txt");
             plot = new BufferedWriter(file);
 
             host1.start();

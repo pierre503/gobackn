@@ -42,10 +42,13 @@ public class GoBackNProtocol
             this.actualSequenceNumber++;
         } else {
             int ack = 0;
+            //gestion du ACK recu.
+            //Ack attendu
             if (sequenceChecker(sequenceNumber)) {
                 ack = actualSequenceNumber;
                 actualSequenceNumber = actualSequenceNumber + 1;
-            } else if (actualSequenceNumber != 0) {
+            }//mauvais ACK recu.
+            else if (actualSequenceNumber != 0) {
                 ack = actualSequenceNumber - 1;
             }
             AckMessage ackMessage = new AckMessage(ack);
@@ -53,10 +56,12 @@ public class GoBackNProtocol
             Random r = new Random();
             int pLP = r.nextInt(101);//tirage au sort d'un nombre entre 0 et 100 pour savoir si on perd le packet ou pas.
             if (pLP > this.lostPercentage) {
+                System.out.println(" ");
                 System.out.println("ACK (" + (int) (host.getNetwork().getScheduler().getCurrentTime() * 1000) + "ms)"
                         + " host=" + host.name + ", dgram.src=" + datagram.src + ", dgram.dst="
                         + datagram.dst + ", iif=" + src + ", counter=" + ack);
                 host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SenderProtocol, ackMessage);
+                System.out.println(" ");
             }
         }
     }

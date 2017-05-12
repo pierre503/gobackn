@@ -91,7 +91,9 @@ public class LauncherGoBackN {
             	System.out.println("EXISTE");
             	new File("plot.txt").delete();
             }
-            file = new FileWriter("plot.txt");
+            
+            //cration du fichier pour les log
+            file = new FileWriter("bqsim/src/reso/examples/gobackn/data/plot.txt");
             plot = new BufferedWriter(file);
 
             host1.start();

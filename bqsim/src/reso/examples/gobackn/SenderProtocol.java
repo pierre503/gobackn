@@ -134,7 +134,7 @@ public class SenderProtocol
             }
         }
        
-        LauncherGoBackN.plot.write(Double.toString(System.currentTimeMillis()*1000));  
+        LauncherGoBackN.plot.write(Double.toString(System.currentTimeMillis()));  
         LauncherGoBackN.plot.write("   ");
         LauncherGoBackN.plot.write(Integer.toString(sizeOfWindow));
         LauncherGoBackN.plot.write("\n");

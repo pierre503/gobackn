@@ -34,7 +34,9 @@ public class Sender extends AbstractApplication {
         super(host, "sender");
         this.dst = dst;
         ip = host.getIPLayer();
-        this.numberOfPackage = numberOfPackage;
+        if (numberOfPackage > 0) {
+            this.numberOfPackage = numberOfPackage;
+        }
         this.lostPercentage = lostPercentage;
     }
 
@@ -42,7 +44,9 @@ public class Sender extends AbstractApplication {
         super(host, "sender");
         this.dst = dst;
         ip = host.getIPLayer();
-        this.numberOfPackage = numberOfPackage;
+        if (numberOfPackage > 0) {
+            this.numberOfPackage = numberOfPackage;
+        }
         this.lostPercentage = lostPercentage;
         this.ssTresh = ssTresh;
     }
@@ -56,13 +60,13 @@ public class Sender extends AbstractApplication {
         if (lostPercentage == -1) {
             senderProtocol = new SenderProtocol((IPHost) host, ssTresh);
         } else {
-            senderProtocol = new SenderProtocol((IPHost) host,ssTresh, lostPercentage);
+            senderProtocol = new SenderProtocol((IPHost) host, ssTresh, lostPercentage);
         }
         ip.addListener(SenderProtocol.IP_PROTO_SenderProtocol, senderProtocol);
         senderProtocol.launch(dst);
         senderProtocol.addPackageToSend(packageToSend);
         senderProtocol.setSendMessage(false);
-        
+
     }
 
     public void stop() {

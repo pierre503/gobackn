@@ -19,16 +19,16 @@ avec un contrôle de la congestion de type Reno au sein d'un simulateur fourni p
 
 \section{Lancement}
 Lorsque vous voulez lancer le projet, vous pouvez définir plusieurs varibales qui influeront sur le programme.
-Tout d'abord, vous pouvez définir un Timer par défaut, autrement dit, vous pouvez accordé un temps fixe qui servira
-comme paramètre lorsque les timers se lanceront.
+Tout d'abord, vous pouvez définir le nombre de paquets que vous voulez envoyer en première variable.
 
 De plus, la deuxième varibale que vous pouvez définir est le treshold.
 
-Enfin, si vous voulez tester plus aisément la perte de paquets, vous pouvez définir le pourcentage de perte des paquets sur le lien.
+De plus, si vous voulez tester plus aisément la perte de paquets, vous pouvez définir le pourcentage de perte des paquets sur le lien.
 ( il doit être compris en 0 et 100 ).
 
-Pour plus de facilité lors de l'Implémentation, à partir du moment où vous souhaitez changer une de ces variables, veuillez indiquer 0 pour les
-autres.
+Enfin, vous pouvez aussi choisir le pourcentage de perte de ACK( il doit être compris en 0 et 100 ).
+
+Pour plus de facilité lors de l'Implémentation, à partir du moment où vous souhaitez changer une de ces variables, veuillez indiquer 0 pour toutes les variables précédentes (exemple si vous voulez juste changer le pourcentage de perte de paquets vous devez lancer le programme suivi de 0,0,20) .
 
 \section{Problèmes rencontrés}
 Tout au long du développement, plusieurs problèmes ont été rencontrés.\\

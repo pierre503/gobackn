@@ -39,24 +39,26 @@ public class SenderProtocol
     private double srtt;
     private double rttvar;
     private double timerValue;
+    private boolean sendMessage = true;
 
-    public SenderProtocol(IPHost host, int numberOfPackage, int ssTresh) {
+    public SenderProtocol(IPHost host, int ssTresh) {
         this.host = host;
-        packageToSend.add(new PayloadMessage(0));
-        for (int i = 1; i < numberOfPackage + 1; i++) {
-            packageToSend.add(new PayloadMessage(i));
-        }
         this.ssTresh = ssTresh;
+        packageToSend.add(new PayloadMessage(0));
+
     }
 
-    public SenderProtocol(IPHost host, int numberOfPackage, int ssTresh, int lostPercentage) {
+    public SenderProtocol(IPHost host, int ssTresh, int lostPercentage) {
         this.host = host;
-        packageToSend.add(new PayloadMessage(0));
-        for (int i = 1; i < numberOfPackage + 1; i++) {
-            packageToSend.add(new PayloadMessage(i));
-        }
         this.lostPercentage = lostPercentage;
         this.ssTresh = ssTresh;
+        packageToSend.add(new PayloadMessage(0));
+
+    }
+
+    public void setSendMessage(boolean sendMessage) {
+        this.sendMessage = sendMessage;
+        System.out.println("ici");
     }
 
     /**
@@ -85,25 +87,29 @@ public class SenderProtocol
                 this.actualTimer.stop();
                 this.actualTimer = null;
             }
+            while ((sequenceN == this.packageToSend.size() - 1) && sendMessage) {
+
+            }
 
             // Si le ACK recu est plus grand que celui attendu  
-        } else if (sequenceN >= this.actualSequenceNumber) {
+        }
+        if ((sequenceN >= this.actualSequenceNumber) && !(sequenceN == this.packageToSend.size() - 1)) {
             if (sequenceN == 0) {
                 // Reception du paquet test afin de determiner le R
                 Timer.setArrivalTimer(host.getNetwork().getScheduler().getCurrentTime());
                 this.r = Timer.getArrivalTimer() - Timer.getDepartTimer();
                 this.srtt = this.r;
-                this.rttvar = this.r/2;
+                this.rttvar = this.r / 2;
                 this.timerValue = 3000;
-                System.out.println("Package test receive; R value calculate: "+ this.r+"s");
+                System.out.println("Package test receive; R value calculate: " + this.r + "s");
                 System.out.println("---------------------------------------------------");
             }
             this.numberOfDuplicateAck = 0;
             if (sequenceN != 0) {
                 //calcul du srtt,rrttvar et de la nouvelle valeur du timer.
-                this.srtt = (0.875*this.srtt)+(0.125*this.r);
-                this.rttvar = (0.75*this.rttvar)+0.25*(Math.abs(this.srtt - this.r));
-                this.timerValue = this.srtt + (4*this.rttvar);
+                this.srtt = (0.875 * this.srtt) + (0.125 * this.r);
+                this.rttvar = (0.75 * this.rttvar) + 0.25 * (Math.abs(this.srtt - this.r));
+                this.timerValue = this.srtt + (4 * this.rttvar);
                 //calcul de la taille de la fenetre d'envoi.
                 for (int i = 0; i < sequenceN - this.actualSequenceNumber + 1; i++) {
                     //slow start
@@ -129,10 +135,9 @@ public class SenderProtocol
                 this.actualSequenceNumber += 1;
                 cursorSenderWindow -= 1;
             }
-            //lancement du timer.
-            gestionDuTimer(src, datagram);
             if ((this.actualSequenceNumber + this.cursorSenderWindow) < this.packageToSend.size()) {
                 lastAck = sequenceN;
+                gestionDuTimer(src, datagram);
                 sendPackageOfWindow(src, datagram);
             }
         } else if (lastAck == sequenceN) {
@@ -153,13 +158,12 @@ public class SenderProtocol
                 sendPackageOfWindow(src, datagram);
             }
         }
-       
-        LauncherGoBackN.plot.write(Double.toString(System.currentTimeMillis()));  
+
+        LauncherGoBackN.plot.write(Integer.toString((int) (host.getNetwork().getScheduler().getCurrentTime() * 1000)));
         LauncherGoBackN.plot.write("   ");
         LauncherGoBackN.plot.write(Integer.toString(sizeOfWindow));
         LauncherGoBackN.plot.write("\n");
         LauncherGoBackN.plot.flush();
-        
 
     }
 
@@ -185,6 +189,7 @@ public class SenderProtocol
             System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
             System.out.println("Actual timer value: " + this.timerValue + "s");
             System.out.println("Size of the sending window: " + sizeOfWindow + ", with already " + cursorSenderWindow + " message(s) sent.");
+            System.out.println("size: " + this.packageToSend.size() + ", with already " + this.actualSequenceNumber + " message(s) sent.");
             int numberOfPackageToSend = sizeOfWindow - cursorSenderWindow;
             //envoi des packages pas encore envoye dans la fenetre d'envoi.
             for (int i = 0; i < numberOfPackageToSend; i++) {
@@ -204,12 +209,13 @@ public class SenderProtocol
             System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
         }
     }
-    
+
     /**
      * Cette methode permet de gerer l'expiration d'un timer.
+     *
      * @param src
      * @param datagram
-     * @throws Exception 
+     * @throws Exception
      */
     public void sendPackageOutTimer(IPInterfaceAdapter src, Datagram datagram) throws Exception {
         System.out.println("---------------------------");
@@ -222,7 +228,7 @@ public class SenderProtocol
         this.cursorSenderWindow = 0;
         this.ssTresh = sizeOfWindow / 2;
         this.sizeOfWindow = 1;
-        this.timerValue = 2*this.timerValue;
+        this.timerValue = 2 * this.timerValue;
         gestionDuTimer(src, datagram);
         this.restOfAI = 0;
         sendPackageOfWindow(src, datagram);
@@ -231,11 +237,20 @@ public class SenderProtocol
     public static int getActualSequenceNumber() {
         return actualSequenceNumber;
     }
-    
+
+    public void addPackageToSend(ArrayList<PayloadMessage> packageToSendReceive) {
+        for (int i = 0; i < packageToSendReceive.size(); i++) {
+            this.packageToSend.add(packageToSendReceive.get(i));
+        }
+        System.out.println("hello");
+    }
+
     /**
-     * Cette methode permet de gerer le timer (a lancer si ack recu permet d'avancer dans la fenetre d'envoi).
+     * Cette methode permet de gerer le timer (a lancer si ack recu permet
+     * d'avancer dans la fenetre d'envoi).
+     *
      * @param src
-     * @param datagram 
+     * @param datagram
      */
     public void gestionDuTimer(IPInterfaceAdapter src, Datagram datagram) {
         if (this.actualTimer != null) {

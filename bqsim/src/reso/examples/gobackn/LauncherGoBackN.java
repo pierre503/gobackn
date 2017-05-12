@@ -5,11 +5,8 @@
  */
 package reso.examples.gobackn;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 
 import reso.common.Link;
@@ -93,8 +90,10 @@ public class LauncherGoBackN {
             }
             
             //cration du fichier pour les log
-            file = new FileWriter("src/reso/examples/gobackn/data/plot.txt");
-            plot = new BufferedWriter(file);
+
+            file = new FileWriter("log.txt");
+            
+            plot = new BufferedWriter(file); 
 
             host1.start();
             host2.start();

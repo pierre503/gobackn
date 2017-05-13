@@ -18,10 +18,8 @@ avec un contrôle de la congestion de type Reno au sein d'un simulateur fourni p
 à effectuer en Java.
 
 \section{Lancement}
-Lorsque vous voulez lancer le projet, vous pouvez définir plusieurs varibales qui influeront sur le programme.
+Lorsque vous voulez lancer le projet, vous pouvez définir plusieurs variables qui influeront sur le programme.
 Tout d'abord, vous pouvez définir le nombre de paquets que vous voulez envoyer en première variable.
-
-De plus, la deuxième varibale que vous pouvez définir est le treshold.
 
 De plus, si vous voulez tester plus aisément la perte de paquets, vous pouvez définir le pourcentage de perte des paquets sur le lien.
 ( il doit être compris en 0 et 100 ).
@@ -34,16 +32,14 @@ Pour plus de facilité lors de l'Implémentation, à partir du moment où vous s
 Tout au long du développement, plusieurs problèmes ont été rencontrés.\\
 Afin de déterminer le temps de RTT d'un paquet, nous avions décidé d'utiliser un paquet test composé d'un numéro de séquence -1.
 Cependant, due à notre implémentation, le numéro de séquence est transformé en binaire. Ce qui a causé quelques problèmes étant donné
-que l'entier était négatif. Nous avons donc décidé que le numéro de séquence 0 serait notre paquet test.
+que l'entier était négatif. Nous avons donc décidé que le numéro de séquence 0 serait notre paquet test.\\
 \\
-Suite à une discussion avec les professeurs, nous avons choisis d'exlure la probabilité de perte sur le paquet test.
+Suite à une discussion avec les professeurs, nous avons choisis d'exclure la probabilité de perte sur le paquet test.
 Ce qui permet de recevoir un ACK(0) sans aucune ambiguïté.
 
 \section{Conclusion}
 Plusieurs objectifs étaient à atteindre lors de la réalisation de ce projet. Tout d'abord, nous avons dû implémenter le 
 protocole de type Go-Back-N, nous avons également implémenter le ``pipelining'' permettant l'envois de plusieurs paquets.
 De plus , nous avons également implémenté la congestion comme demandé par les professeurs.\\
-
-Le système de log ainsi que le ``plot'' ont été fournis afin de faciliter les tests.
 
 \end{document}

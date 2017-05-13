@@ -238,9 +238,24 @@ public class SenderProtocol
         return actualSequenceNumber;
     }
 
+    /**
+     * Cette methode permtet de rajouter une serie de payload a envoyer. Attention les payload doisent contenir le bon numero de sequence.
+     * @param packageToSendReceive ArrayList de payload a envoyer
+     */
     public void addPackageToSend(ArrayList<PayloadMessage> packageToSendReceive) {
         for (int i = 0; i < packageToSendReceive.size(); i++) {
             this.packageToSend.add(packageToSendReceive.get(i));
+        }
+        System.out.println("hello");
+    }
+    
+    /**
+     * Cette methode permet de rajouter une serie de message a envoyer.
+     * @param packageToSendReceive ArrayList de messages a envoyer
+     */
+        public void addMessageTosend(ArrayList<Integer> packageToSendReceive) {
+        for (int i = 0; i < packageToSendReceive.size(); i++) {
+            this.packageToSend.add(new PayloadMessage(this.packageToSend.size(),packageToSendReceive.get(i)));
         }
         System.out.println("hello");
     }

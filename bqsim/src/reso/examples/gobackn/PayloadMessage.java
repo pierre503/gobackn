@@ -37,6 +37,27 @@ public class PayloadMessage implements Message {
         //cree le payload
         this.payload = sequenceNumS + message;
     }
+    
+        /**
+     * Cree le payload et le place dans la variable payload.
+     *
+     * @param sequenceNumber numero de sequence du payload.
+     * @param message Message a mettre dans le payload.
+     */
+    public PayloadMessage(int sequenceNumber, int message) {
+        String sequenceNumS = "";
+        //traduis le numero de sequence en binaire.
+        sequenceNumS = Integer.toBinaryString(sequenceNumber);
+
+        //place le numero de sequence sur 32 "bits"
+        int zeroNeed = (32 - sequenceNumS.length());
+        for (int i = 0; i < zeroNeed; i++) {
+            sequenceNumS = "0" + sequenceNumS;
+        }
+
+        //cree le payload
+        this.payload = sequenceNumS + message;
+    }
 
     public String getPayload() {
         return this.payload;

@@ -43,8 +43,7 @@ public class GoBackNProtocol
         } else {
             int ack = 0;
             //gestion du ACK recu.
-            //Ack attendu
-            System.out.println("ACK attendu"+ this.actualSequenceNumber +"Ack recu:"+sequenceNumber+" =>"+sequenceSN);
+            //Message attendu
             if (sequenceChecker(sequenceNumber)) {
                 ack = actualSequenceNumber;
                 actualSequenceNumber = actualSequenceNumber + 1;

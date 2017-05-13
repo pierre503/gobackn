@@ -6,6 +6,7 @@
 package reso.examples.gobackn;
 
 import java.util.ArrayList;
+import java.util.Random;
 import reso.common.AbstractApplication;
 import reso.ip.IPAddress;
 import reso.ip.IPHost;
@@ -21,7 +22,7 @@ public class Sender extends AbstractApplication {
     private static int numberOfPackage;
     private int lostPercentage = -1;
     private static int ssTresh = 2000;
-    private ArrayList<PayloadMessage> packageToSend = new ArrayList<PayloadMessage>();
+    private ArrayList<Integer> packageToSend = new ArrayList<Integer>();
 
     public Sender(IPHost host, IPAddress dst, int numberOfPackage) {
         super(host, "sender");
@@ -53,8 +54,9 @@ public class Sender extends AbstractApplication {
 
     public void start()
             throws Exception {
+        Random r = new Random();
         for (int i = 1; i < numberOfPackage + 1; i++) {
-            packageToSend.add(new PayloadMessage(i));
+            packageToSend.add(r.nextInt(1001));
         }
         SenderProtocol senderProtocol;
         if (lostPercentage == -1) {
@@ -64,7 +66,7 @@ public class Sender extends AbstractApplication {
         }
         ip.addListener(SenderProtocol.IP_PROTO_SenderProtocol, senderProtocol);
         senderProtocol.launch(dst);
-        senderProtocol.addPackageToSend(packageToSend);
+        senderProtocol.addMessageTosend(packageToSend);
         senderProtocol.setSendMessage(false);
 
     }

@@ -19,12 +19,14 @@ avec un contrôle de la congestion de type Reno au sein d'un simulateur fourni p
 
 \section{Lancement}
 Lorsque vous voulez lancer le projet, vous pouvez définir plusieurs variables qui influeront sur le programme.
-Tout d'abord, vous pouvez définir le nombre de paquets que vous voulez envoyer en première variable.
+Tout d'abord, en première position, vous pouvez définir le nombre de paquets que vous voulez envoyer en première variable.
 
-De plus, si vous voulez tester plus aisément la perte de paquets, vous pouvez définir le pourcentage de perte des paquets sur le lien.
+En deuxième position vous pouvez aussi définir la position de depart du treshold.
+
+De plus, en troisième position, si vous voulez tester plus aisément la perte de paquets, vous pouvez définir le pourcentage de perte des paquets sur le lien.
 ( il doit être compris en 0 et 100 ).
 
-Enfin, vous pouvez aussi choisir le pourcentage de perte de ACK( il doit être compris en 0 et 100 ).
+Enfin, dernière position, vous pouvez aussi choisir le pourcentage de perte de ACK( il doit être compris en 0 et 100 ).
 
 Pour plus de facilité lors de l'Implémentation, à partir du moment où vous souhaitez changer une de ces variables, veuillez indiquer 0 pour toutes les variables précédentes (exemple si vous voulez juste changer le pourcentage de perte de paquets vous devez lancer le programme suivi de 0,0,20) .
 

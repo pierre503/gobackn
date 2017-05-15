@@ -67,7 +67,7 @@ public class Sender extends AbstractApplication {
         ip.addListener(SenderProtocol.IP_PROTO_SenderProtocol, senderProtocol);
         senderProtocol.launch(dst);
         senderProtocol.addMessageTosend(packageToSend);
-        senderProtocol.setSendMessage(false);
+        senderProtocol.end();
 
     }
 

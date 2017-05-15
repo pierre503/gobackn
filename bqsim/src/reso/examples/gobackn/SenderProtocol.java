@@ -56,9 +56,11 @@ public class SenderProtocol
 
     }
 
-    public void setSendMessage(boolean sendMessage) {
-        this.sendMessage = sendMessage;
-        System.out.println("ici");
+    /**
+     * Cette methode permet de a l'utilisateur de signaler qu'il a fini d'envoyer ses messages.
+     */
+    public void end() {
+        this.sendMessage = false;
     }
 
     /**
@@ -246,7 +248,6 @@ public class SenderProtocol
         for (int i = 0; i < packageToSendReceive.size(); i++) {
             this.packageToSend.add(packageToSendReceive.get(i));
         }
-        System.out.println("hello");
     }
     
     /**
@@ -257,7 +258,6 @@ public class SenderProtocol
         for (int i = 0; i < packageToSendReceive.size(); i++) {
             this.packageToSend.add(new PayloadMessage(this.packageToSend.size(),packageToSendReceive.get(i)));
         }
-        System.out.println("hello");
     }
 
     /**

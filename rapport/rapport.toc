@@ -1,0 +1,6 @@
+\contentsline {section}{\numberline {1}Introduction}{2}
+\contentsline {section}{\numberline {2}Lancement}{2}
+\contentsline {section}{\numberline {3}Utilisation du SenderProtocol et du GoBackNProtocol dans d'autre simulation}{2}
+\contentsline {section}{\numberline {4}Lecture des donn\IeC {\'e}es d'une simulation}{3}
+\contentsline {section}{\numberline {5}Probl\IeC {\`e}mes rencontr\IeC {\'e}s}{3}
+\contentsline {section}{\numberline {6}Conclusion}{3}

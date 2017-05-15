@@ -43,7 +43,7 @@ Au commencement nous avons créé un programme simple pour envoyer des messages 
 Une fois les paquets bien envoyé et les ACK bien reçus nous sommes passé à la gestion des ACK perdu. Cette partie c'est faites assez rapidement car elle avait déjà été presque entièrement géré.\\
 Nous sommes passez après à la gestion des 3ACK dupliqué ainsi qu'à la gestion du time out avec un timer. Cette partie nous as poussé à gérer la perte de paquets à l'envoi car nous ne pouvions pas observer les gestions des 3ACK dupliqués ou des time out sinon. Nous avons même améliorer la gestion des 3 ACK, car ceux-ci ne peuvent lancer des exceptions qu'une seul fois. C'est-à-dire que si le timer est trop long et ne se déclenche pas et qu'il y a 6 ACK dupliqués nous n'activons qu'une fois la gestion des 3 ACK dupliqués (même si normalement un time out doit logiquement se déclencher avant).\\
 Une fois tout ces fonctionnalité implémenté nous avons permis à l'utilisateur de définir des variables du programmes pour pouvoir faire des observations plus proche de celles qu'il souhaiterait.\\
-Pour terminer nous avons permis à l'utilisateur de rajouter des éléments à l'envoi quand il le voulais durant l'exécution du programmes et de choisir quand il avait fini d'envoyer ses informations.\\
+Pour terminer nous avons permis à l'utilisateur de rajouter des éléments à l'envoi quand il le voulait durant l'exécution du programmes et de choisir quand il avait fini d'envoyer ses informations.\\
 
 
 

@@ -29,7 +29,7 @@ public class SenderProtocol
 
     // private static boolean testTimer=false;
     private int sizeOfWindow = 1;//taille de la fenetre d'envoi.
-    private int ssTresh;
+    private int ssTresh = 200;
     private int numberOfDuplicateAck = 0;//nombre de ack dupliquer.
     private int lastAck;//dernier ack connu.
     private int lostPercentage = 0;//pourcentage de perte de package.
@@ -41,6 +41,11 @@ public class SenderProtocol
     private double timerValue;
     private boolean sendMessage = true;
 
+     public SenderProtocol(IPHost host) {
+        this.host = host;
+        packageToSend.add(new PayloadMessage(0));
+    }   
+    
     public SenderProtocol(IPHost host, int ssTresh) {
         this.host = host;
         this.ssTresh = ssTresh;

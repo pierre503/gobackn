@@ -21,7 +21,7 @@ public class Sender extends AbstractApplication {
     private final IPAddress dst;
     private static int numberOfPackage;
     private int lostPercentage = -1;
-    private static int ssTresh = 2000;
+    private static int ssTresh = 200;
     private ArrayList<Integer> packageToSend = new ArrayList<Integer>();
 
     public Sender(IPHost host, IPAddress dst, int numberOfPackage) {

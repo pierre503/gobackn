@@ -15,7 +15,7 @@ public class GoBackNProtocol
 
     private final IPHost host;
     private int actualSequenceNumber = 0;
-    private int lostPercentage = 10;//pourcentage de perte de package.
+    private int lostPercentage = 0;//pourcentage de perte de package.
 
     public GoBackNProtocol(IPHost host) {
         this.host = host;

@@ -32,7 +32,7 @@ public class SenderProtocol
     private int ssTresh;
     private int numberOfDuplicateAck = 0;//nombre de ack dupliquer.
     private int lastAck;//dernier ack connu.
-    private int lostPercentage = 10;//pourcentage de perte de package.
+    private int lostPercentage = 0;//pourcentage de perte de package.
     private Timer actualTimer;
     private float restOfAI = 0;
     private double r;
@@ -198,6 +198,7 @@ public class SenderProtocol
                 if (i + actualSequenceNumber < this.packageToSend.size()) {
                     Random r = new Random();
                     int pLP = r.nextInt(101);//tirage au sort d'un nombre entre 0 et 100 pour savoir si on perd le packet ou pas.
+                    System.out.println(pLP);
                     if (pLP > this.lostPercentage) {
                         System.out.println("Sender of Message (" + (int) (host.getNetwork().getScheduler().getCurrentTime() * 1000) + "ms)"
                                 + " host=" + host.name + ", dgram.src=" + datagram.src + ", dgram.dst="

@@ -30,7 +30,7 @@ Enfin, dernière position, vous pouvez aussi choisir le pourcentage de perte de 
 \\
 Pour plus de facilité lors de l'Implémentation, à partir du moment où vous souhaitez changer une de ces variables, veuillez indiquer 0 pour toutes les variables précédentes (exemple si vous voulez juste changer le pourcentage de perte de paquets vous devez lancer le programme suivi de 0,0,20).\\
 \\
-En suivant ces instructions vous pourrez lancer le programme par la classe "LauncherGoBackN" facilement et celon vos critère.
+En suivant ces instructions vous pourrez lancer le programme par la classe "LauncherGoBackN" facilement et selon vos critère.
 
 \section{Utilisation du SenderProtocol et du GoBackNProtocol dans d'autre simulation}
 Le SenderProtocol et le GoBackNProtocol peuvent être utilisés dans d'autres simulations. Ils doivent cependant être lancé ensemble car ils fonctionnent ensemble. Une fois, le SenderProtocol et le GoBackNProtocol créé, et rajouté dans un ip listener, vous pouvez lancer la communication entre les deux en lançant la méthode "launch" du SenderProtocol. Après la méthode launch lancée vous pouvez rajouter des messages de deux façons au SenderProtocol. Soit vous pouvez envoyer  une ArrayList de messages (sous forme d'entier de 32 bits) avec la méthode "addMessageTosend", soit rajouter directement une ArrayList de "PayloadMessage" mais ceux-ci doivent alors déjà avoir leur bon numéro de séquence ou alors ils vont créer des gestions de timeout à l'infini. Une fois tout les messages envoyer à l'instance de SenderProtocol vous devez lui signaler que vous avez fini en laçant la méthode "end" qui signalera que vous ne voulez plus envoyer de messages et qu'il peut s'arrêter une fois qu'il a envoyer tout les messages.\\
